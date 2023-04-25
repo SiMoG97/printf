@@ -1,0 +1,71 @@
+#include "main.h"
+
+/**
+ * _printf - Printf function
+ * @format: format
+ * @...: arguments list
+ *
+ * Return: the number of characters printed, or -1 if an error occurred
+ */
+
+int _printf(const char *format, ...)
+{
+	va_list(args);
+	int len = 0;;
+
+	if (format == NULL)
+		return (-1);
+	va_start(args, format);
+	len = print_handler(format, args);
+	va_end(args);
+	return (len);
+}
+
+/**
+ * print_handler - Entry point
+ * @format: format
+ * @args: args
+ * Return: length
+ */
+
+int print_handler(const char *format, va_list args)
+{
+	int i, len = 0;
+	char *str;
+
+	for (i = 0; format[i] != '\0'; i++)
+	{
+		if (format[i] == '%')
+		{
+			i++;
+			switch (format[i])
+			{
+				case 'c':
+					len += _putchar(va_arg(args, int));
+					break;
+				case 's':
+					str = va_arg(args, char *);
+					if (str == NULL)
+						len += print_s("(null)");
+					else
+						len += print_s(str);
+					break;
+				case '%':
+					len += _putchar('%');
+					break;
+				case 'd':
+					len += print_d(va_arg(args, int));
+					break;
+				default:
+					len += _putchar(format[i]);
+					break;
+			}
+		}
+		else
+		{
+			len += _putchar(format[i]);
+		}
+	}
+	return (len);
+}
+
