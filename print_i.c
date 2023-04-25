@@ -9,24 +9,25 @@
  */
 int print_hex(unsigned int n, unsigned int c)
 {
-	unsigned int a[4];
-	unsigned int i, m, sum;
-	char diff;
-	int count;
+	unsigned int a[8];
+	unsigned int i, m = 268435456; /* (16 ^ 7) */
+	char diff = c ? 'A' - ':' : 'a' - ':';
+	int count = 0;
 
-	m = 0x10000000; /* 16 ^ 7 */
-	diff = c ? 'A' - ':' : 'a' - ':';
-	for (i = 0; i < 4; i++)
+	a[0] = n / m;
+	for (i = 1; i < 8; i++)
 	{
-		a[i] = (n / m) % 16;
 		m /= 16;
+		a[i] = (n / m) % 16;
 	}
-	for (i = 0, sum = 0, count = 0; i < 4; i++)
+	for (i = 0; i < 8; i++)
 	{
-		sum += a[i];
-		if (sum || i == 3)
+		if (a[i] || count)
 		{
-			_putchar(a[i] < 10 ? '0' + a[i] : '0' + diff + a[i]);
+			if (a[i] < 10)
+				_putchar('0' + a[i]);
+			else
+				_putchar('0' + diff + a[i]);
 			count++;
 		}
 	}
@@ -45,7 +46,7 @@ int print_x(va_list x)
 }
 
 /**
- * print_X - takes am unsigned int and prints it in uppercase hex notation
+ * print_X - takes an unsigned int and prints it in uppercase hex notation
  * @X: unsigned int to print
  *
  * Return: number of digits printed
@@ -54,6 +55,24 @@ int print_X(va_list X)
 {
 	return (print_hex(va_arg(X, unsigned int), 1));
 }
+
+/**
+ * _pow - calculates an exponent
+ * @base: base of exponent
+ * @exponent: exponent of number
+ *
+ * Return: base ^ exponent
+ */
+static unsigned long _pow(unsigned int base, unsigned int exponent)
+{
+	unsigned long ans = base;
+
+	for (; exponent > 1; exponent--)
+		ans *= base;
+
+	return (ans);
+}
+
 /**
  * print_p - prints an address
  * @p: address to print
@@ -62,31 +81,40 @@ int print_X(va_list X)
  */
 int print_p(va_list p)
 {
+	unsigned long n = va_arg(p, unsigned long);
 	int count = 0;
+	unsigned int a[16];
 	unsigned int i, sum;
-	unsigned long n;
 	char *str = "(nil)";
 
-	n = va_arg(p, unsigned long);
 	if (n == 0)
 	{
-		while (str[count])
+		while (*str)
 		{
-			_putchar(str[count]);
+			_putchar(*str++);
 			count++;
 		}
 		return (count);
 	}
+
 	_putchar('0');
 	_putchar('x');
 	count = 2;
-	for (i = 0, sum = 0; i < 8; i++)
+
+	for (i = 0; i < 16; i++)
 	{
-		sum += (n >> ((7 - i) * 8)) & 0xff;
-		if (sum || i == 7)
+		a[i] = (n / _pow(16, 15 - i)) % 16;
+	}
+	for (i = 0, sum = 0; i < 16; i++)
+	{
+		sum += a[i];
+		if (sum || i == 15)
 		{
-			print_hex((n >> ((7 - i) * 8)) & 0xff, 0);
-			count += 2;
+			if (a[i] < 10)
+				_putchar('0' + a[i]);
+			else
+				_putchar('0' + ('a' - ':') + a[i]);
+			count++;
 		}
 	}
 	return (count);
