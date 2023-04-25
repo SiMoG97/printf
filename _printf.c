@@ -11,11 +11,13 @@
 int _printf(const char *format, ...)
 {
 	va_list(args);
-	int len = 0;;
+	int len = 0;
+
 	if (!format || (format[0] == '%' && !format[1]))
 		return (-1);
 	if (format[0] == '%' && format[1] == ' ' && !format[2])
-		return (-1)
+		return (-1);
+
 	va_start(args, format);
 	len = print_handler(format, args);
 	va_end(args);
