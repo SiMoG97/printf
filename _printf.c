@@ -34,7 +34,6 @@ int _printf(const char *format, ...)
 int print_handler(const char *format, va_list args)
 {
 	int i, len = 0;
-	char *str;
 
 	for (i = 0; format[i] != '\0'; i++)
 	{
@@ -47,11 +46,7 @@ int print_handler(const char *format, va_list args)
 					len += _putchar(va_arg(args, int));
 					break;
 				case 's':
-					str = va_arg(args, char *);
-					if (str == NULL)
-						len += print_s("(null)");
-					else
-						len += print_s(str);
+					len += print_s(va_arg(args, char *));
 					break;
 				case '%':
 					len += _putchar('%');
